@@ -197,6 +197,15 @@ public:
 	OUTPUT: ---
 	*/
 	void GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Color = C_WHITE);
+	/*
+	USAGE: Generates a Circle mesh
+	ARGUMENTS:
+	-	float a_fRadius -> radius of the circle
+	-	int a_nSides -> Number of sides of the circle
+	-	a_v3Color -> Color of the mesh
+	OUTPUT: ---
+	*/
+	void GenerateCircle(float a_fRadius, int a_nSides, vector3 a_v3Color = C_WHITE);
 #pragma endregion
 };
 

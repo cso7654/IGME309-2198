@@ -414,3 +414,36 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 	CompleteMesh(a_v3Color);
 	CompileOpenGL3X();
 }
+void MyMesh::GenerateCircle(float a_fRadius, int a_nSides, vector3 a_v3Color) {
+
+	Release();
+	Init();
+
+	//Make sure sides is at least 3
+	if (a_nSides < 3) {
+		a_nSides = 3;
+	}
+
+	//Store points for center, the last point generated, and the starting point
+	vector3 center(0, 0, 0);
+	vector3 lastPoint(a_fRadius, 0, 0);
+	vector3 firstPoint(a_fRadius, 0, 0);
+	float theta = 0;
+	//Loop through the number of sides and generating a point based on the angle
+	for (int i = 1; i < a_nSides; i++) {
+		//2 / a_nSides radians for each slice
+		theta += ((2 * 3.1415927f) / a_nSides);
+		float x = cos(theta) * a_fRadius;
+		float y = sin(theta) * a_fRadius;
+		vector3 newPoint(x, y, 0);
+		//Add tri to mesh
+		AddTri(center, lastPoint, newPoint);
+		//Update the last point
+		lastPoint = newPoint;
+	}
+	//Connect last point to first point
+	AddTri(center, lastPoint, firstPoint);
+
+	CompleteMesh(a_v3Color);
+	CompileOpenGL3X();
+}
