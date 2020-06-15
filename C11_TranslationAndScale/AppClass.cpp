@@ -4,7 +4,7 @@ void Application::InitVariables(void)
 	//init the mesh
 	m_pMesh = new MyMesh();
 	//m_pMesh->GenerateCube(1.0f, C_WHITE);
-	m_pMesh->GenerateSphere(1.0f, 5, C_WHITE);
+	m_pMesh->GenerateCube(1, C_BLACK);
 }
 void Application::Update(void)
 {
@@ -16,6 +16,12 @@ void Application::Update(void)
 
 	//Is the first person camera active?
 	CameraRotation();
+
+	if (translation.x < 0 || translation.x > posLimit) {
+		movement *= -1.0f;
+	}
+
+	translation.x += movement;
 }
 void Application::Display(void)
 {
@@ -31,9 +37,23 @@ void Application::Display(void)
 	value += 0.01f;
 
 	//matrix4 m4Model = m4Translate * m4Scale;
-	matrix4 m4Model = m4Scale * m4Translate;
+	//matrix4 m4Model = m4Scale * m4Translate;
 
-	m_pMesh->Render(m4Projection, m4View, m4Model);
+	//m_pMesh->Render(m4Projection, m4View, m4Model);
+	//Loop through array of map
+	for (int i = 0; i < width * height; i++) {
+		if (map[i] == true) {
+			//Get coordinates
+			int x = i % (int)(width);
+			int y = (int)(i / width);
+			//Create matrix
+			matrix4 cubePos = glm::translate(IDENTITY_M4, vector3(x, -y, 0));
+			matrix4 modelScale = glm::scale(IDENTITY_M4, vector3(scale));
+			matrix4 translate = glm::translate(IDENTITY_M4, translation);
+			//Render cube
+			m_pMesh->Render(m4Projection, m4View, translate * modelScale * cubePos);
+		}
+	}
 	
 	// draw a skybox
 	m_pMeshMngr->AddSkyboxToRenderList();

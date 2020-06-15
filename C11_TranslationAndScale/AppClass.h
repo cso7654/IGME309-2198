@@ -15,6 +15,21 @@ Date: 2017/05
 class Application
 {
 	MyMesh* m_pMesh = nullptr;
+	const int width = 11;
+	const int height = 8;
+	const float scale = 2;
+	const bool map[88] = {	false, false,  true, false, false, false, false, false,  true, false, false,
+							false, false, false,  true, false, false, false,  true, false, false, false,
+							false, false,  true,  true,  true,  true,  true,  true,  true, false, false,
+							false,  true,  true, false,  true,  true,  true, false,  true,  true, false,
+							 true,  true,  true,  true,  true,  true,  true,  true,  true,  true,  true,
+							 true, false,  true,  true,  true,  true,  true,  true,  true, false,  true,
+							 true, false,  true, false, false, false, false, false,  true, false,  true,
+							false, false, false,  true,  true, false,  true,  true, false, false, false};
+	vector3 translation;
+	bool moveLeft = false;
+	float posLimit = 10;
+	float movement = 0.05;
 	String m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu";
 
 private:
