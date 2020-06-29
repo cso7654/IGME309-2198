@@ -211,7 +211,6 @@ public:
 	OUTPUT: ---
 	*/
 	void CalculateProjectionMatrix(void);
-
 };
 
 } //namespace Simplex
