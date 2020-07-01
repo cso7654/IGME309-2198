@@ -152,11 +152,27 @@ void Simplex::MyCamera::CalculateProjectionMatrix(void)
 
 void MyCamera::MoveForward(float a_fDistance)
 {
-	//The following is just an example and does not take in account the forward vector (AKA view vector)
-	m_v3Position += vector3(0.0f, 0.0f,-a_fDistance);
-	m_v3Target += vector3(0.0f, 0.0f, -a_fDistance);
-	m_v3Above += vector3(0.0f, 0.0f, -a_fDistance);
+	//Direction is based on difference between target and position. "flatten" it so movement in y-axis isn't broken (like minecraft camera)
+	vector3 delta = glm::normalize(GetTarget() - GetPosition()) * vector3(1, 0, 1) * a_fDistance;
+
+	m_v3Position += delta;
+	m_v3Target += delta;
+	m_v3Above += delta;
 }
 
-void MyCamera::MoveVertical(float a_fDistance){}//Needs to be defined
-void MyCamera::MoveSideways(float a_fDistance){}//Needs to be defined
+void MyCamera::MoveVertical(float a_fDistance){
+	m_v3Position += vector3(0.0f, -a_fDistance, 0.0f);
+	m_v3Target += vector3(0.0f, -a_fDistance, 0.0f);
+	m_v3Above += vector3(0.0f, -a_fDistance, 0.0f);
+}
+
+void MyCamera::MoveSideways(float a_fDistance){
+	//Direction is based on difference between target and position. "flatten" it so movement in y-axis isn't broken (like minecraft camera)
+	vector3 delta = glm::normalize(GetTarget() - GetPosition()) * vector3(1, 0, 1) * a_fDistance;
+	//Rotate 90 on y axis to be perpendicular
+	delta = glm::rotateY(delta, (float) (PI / 2));
+
+	m_v3Position += delta;
+	m_v3Target += delta;
+	m_v3Above += delta;
+}

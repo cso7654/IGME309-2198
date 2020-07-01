@@ -41,6 +41,9 @@ private:
 	ControllerInput* m_pController[8]; //Controller
 	uint m_uActCont = 0; //Active Controller of the Application
 
+	float movementSpeed = 0.5f;
+	float mouseSensitivity = 0.5f;
+
 public:
 #pragma region Constructor / Run / Destructor
 	/*
