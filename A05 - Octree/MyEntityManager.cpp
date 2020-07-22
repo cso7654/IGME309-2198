@@ -16,6 +16,9 @@ void Simplex::MyEntityManager::Release(void)
 	}
 	m_uEntityCount = 0;
 	m_mEntityArray = nullptr;
+
+	SafeDelete(octree);
+	octree = nullptr;
 }
 Simplex::MyEntityManager* Simplex::MyEntityManager::GetInstance()
 {
@@ -46,6 +49,11 @@ int Simplex::MyEntityManager::GetEntityIndex(String a_sUniqueID)
 }
 //Accessors
 Simplex::uint Simplex::MyEntityManager::GetEntityCount(void) {	return m_uEntityCount; }
+Octree* Simplex::MyEntityManager::getOctree()
+{
+	return octree;
+}
+
 Simplex::Model* Simplex::MyEntityManager::GetModel(uint a_uIndex)
 {
 	//if the list is empty return
@@ -165,6 +173,14 @@ Simplex::MyEntityManager::MyEntityManager(MyEntityManager const& a_pOther){ }
 Simplex::MyEntityManager& Simplex::MyEntityManager::operator=(MyEntityManager const& a_pOther) { return *this; }
 Simplex::MyEntityManager::~MyEntityManager(){Release();};
 // other methods
+void Simplex::MyEntityManager::regenerateOctree(int levels)
+{
+	std::vector<MyEntity*> entVector;
+	for (int i = 0; i < m_uEntityCount; i++) {
+		entVector.push_back(m_mEntityArray[i]);
+	}
+	octree->regenerate(entVector, levels);
+}
 void Simplex::MyEntityManager::Update(void)
 {
 	//Clear all collisions
@@ -172,13 +188,26 @@ void Simplex::MyEntityManager::Update(void)
 	{
 		m_mEntityArray[i]->ClearCollisionList();
 	}
+	
+	//If the octree is null, create a new one
+	if (octree == nullptr) {
+		//Add entities from array to a vector
+		std::vector<MyEntity*> entVector;
+		for (int i = 0; i < m_uEntityCount; i++) {
+			entVector.push_back(m_mEntityArray[i]);
+		}
+		octree = new Octree(entVector, 4);
+	}
 
-	//check collisions
-	for (uint i = 0; i < m_uEntityCount - 1; i++)
-	{
-		for (uint j = i + 1; j < m_uEntityCount; j++)
+	//Loop through nodes of octree where there are possible collisions
+	for (Octree* node : octree->getCollisionNodes()) {
+		//check collisions
+		for (uint i = 0; i < node->getEntities().size() - 1; i++)
 		{
-			m_mEntityArray[i]->IsColliding(m_mEntityArray[j]);
+			for (uint j = i + 1; j < node->getEntities().size(); j++)
+			{
+				node->getEntities().at(i)->IsColliding(node->getEntities().at(j));
+			}
 		}
 	}
 }
@@ -282,6 +311,10 @@ void Simplex::MyEntityManager::AddEntityToRenderList(uint a_uIndex, bool a_bRigi
 		for (a_uIndex = 0; a_uIndex < m_uEntityCount; ++a_uIndex)
 		{
 			m_mEntityArray[a_uIndex]->AddToRenderList(a_bRigidBody);
+		}
+		//Add octree to render list (if toggled)
+		if (displayOctree) {
+			octree->Display();
 		}
 	}
 	else //do it for the specified one

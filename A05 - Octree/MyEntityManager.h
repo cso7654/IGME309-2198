@@ -6,6 +6,7 @@ Date: 2017/07
 #define __MYENTITYMANAGER_H_
 
 #include "MyEntity.h"
+#include "Octree.h"
 
 namespace Simplex
 {
@@ -16,8 +17,11 @@ class MyEntityManager
 	typedef MyEntity* PEntity; //MyEntity Pointer
 	uint m_uEntityCount = 0; //number of elements in the list
 	PEntity* m_mEntityArray = nullptr; //array of MyEntity pointers
+	Octree* octree;
 	static MyEntityManager* m_pInstance; // Singleton pointer
 public:
+	bool displayOctree = true;
+
 	/*
 	Usage: Gets the singleton pointer
 	Arguments: ---
@@ -246,6 +250,9 @@ public:
 	OUTPUT: MyEntity count
 	*/
 	uint GetEntityCount(void);
+
+	Octree* getOctree();
+	void regenerateOctree(int);
 private:
 	/*
 	Usage: constructor

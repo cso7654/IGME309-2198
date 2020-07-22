@@ -30,7 +30,7 @@ void Application::InitVariables(void)
 		}
 	}
 
-	m_uOctantLevels = 1;
+	m_uOctantLevels = 4;
 	//m_pRoot = new Octree(m_uOctantLevels, 5);
 	m_pEntityMngr->Update();
 }
@@ -45,6 +45,32 @@ void Application::Update(void)
 	//Is the first person camera active?
 	CameraRotation();
 	
+	//Get input for octant level updates
+	if (gui.io.KeysDown[sf::Keyboard::Equal]) {
+		//Set equals (plus) to false to prevent constant pressing
+		gui.io.KeysDown[sf::Keyboard::Equal] = false;
+		m_uOctantLevels++;
+	}
+	if (gui.io.KeysDown[sf::Keyboard::Dash]) {
+		//Set subtract to false to prevent constant pressing
+		gui.io.KeysDown[sf::Keyboard::Dash] = false;
+		m_uOctantLevels--;
+		if (m_uOctantLevels < 0) {
+			m_uOctantLevels = 0;
+		}
+	}
+	//Get input for octree display toggle
+	if (gui.io.KeysDown[sf::Keyboard::Tab]) {
+		//Set Tab to false to prevent constant pressing
+		gui.io.KeysDown[sf::Keyboard::Tab] = false;
+		m_pEntityMngr->displayOctree = !m_pEntityMngr->displayOctree;
+	}
+
+	//Regenerate octree if the level was changed
+	if (m_uOctantLevels != m_pEntityMngr->getOctree()->getCurrentLevels()) {
+		m_pEntityMngr->regenerateOctree(m_uOctantLevels);
+	}
+
 	//Update Entity Manager
 	m_pEntityMngr->Update();
 
